@@ -1,0 +1,12 @@
+quality_check,affected_rows,affected_rate,interpretation
+missing_event_time,0,0.0,Missing values in raw column
+missing_event_type,0,0.0,Missing values in raw column
+missing_product_id,0,0.0,Missing values in raw column
+missing_category_id,0,0.0,Missing values in raw column
+missing_category_code,20339246,0.9829122537070794,Missing values in raw column
+missing_brand,8757117,0.423195511104324,Missing values in raw column
+missing_price,0,0.0,Missing values in raw column
+missing_user_id,0,0.0,Missing values in raw column
+missing_user_session,4598,0.00022220246230096982,Missing values in raw column
+duplicate_rows_within_chunk,1109095,0.0535980078133306,Exact duplicated raw records detected within each processing chunk
+invalid_event_type,0,0.0,Events outside expected view/cart/remove_from_cart/purchase taxonomy

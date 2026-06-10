@@ -1,0 +1,41 @@
+{
+  "project": "E-commerce App User Conversion and Retention Analysis",
+  "workflow": "research_style_analysis",
+  "config": {
+    "zip_path": "C:\\Users\\ujun6\\Desktop\\archive (1).zip",
+    "output_dir": "research_outputs",
+    "chunksize": "500000",
+    "max_rows_per_file": "None",
+    "top_n": "50",
+    "random_seed": "42"
+  },
+  "generated_at_utc": "2026-06-10T09:19:05.734150+00:00",
+  "months": [
+    "2019-10",
+    "2019-11",
+    "2019-12",
+    "2020-01",
+    "2020-02"
+  ],
+  "row_count": 20692840,
+  "min_event_time": "2019-10-01 00:00:00+00:00",
+  "max_event_time": "2020-02-29 23:59:59+00:00",
+  "event_type_counts": {
+    "view": 9657821,
+    "cart": 5768333,
+    "remove_from_cart": 3979679,
+    "purchase": 1287007
+  },
+  "unique_active_users": 1639358,
+  "unique_buyers": 110518,
+  "total_revenue": 6348004.87,
+  "total_purchase_events": 1287007,
+  "average_next_month_active_retention": 0.1486297245572628,
+  "research_questions": [
+    "How do users move from product views to carts and purchases?",
+    "How stable is user retention across monthly cohorts?",
+    "Which brands, categories, products, and price buckets drive revenue and conversion?",
+    "Which user segments are most valuable or most likely to churn?",
+    "What data quality risks should be considered before business decisions?"
+  ]
+}

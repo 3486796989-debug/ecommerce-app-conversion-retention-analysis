@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>E-commerce App User Conversion and Retention Analysis</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #5B6475;
+      --line: #D8DEE9;
+      --soft: #F6F8FB;
+      --blue: #2563EB;
+      --panel: #FFFFFF;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: #F3F5F8;
+      line-height: 1.55;
+    }
+    header { background: #111827; color: #fff; padding: 44px 7vw 36px; }
+    header p { max-width: 960px; color: #DDE5F2; font-size: 17px; margin: 12px 0 0; }
+    h1 { font-size: clamp(34px, 5vw, 56px); line-height: 1.05; margin: 0; letter-spacing: 0; }
+    h2 { font-size: 25px; margin: 0 0 14px; }
+    h3 { font-size: 17px; margin: 20px 0 10px; }
+    main { padding: 28px 7vw 56px; }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 24px;
+      margin: 18px 0;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .metric { border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: var(--soft); }
+    .metric-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+    .metric-value { font-size: 24px; line-height: 1.25; font-weight: 760; margin-top: 5px; }
+    .metric-detail { color: var(--muted); font-size: 13px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+    img.chart { width: 100%; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+    table.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    table.data-table th, table.data-table td { border-bottom: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
+    table.data-table th { background: var(--soft); color: var(--muted); font-weight: 650; }
+    li + li { margin-top: 8px; }
+    .note { color: var(--muted); font-size: 13px; }
+    footer { color: var(--muted); padding: 0 7vw 34px; font-size: 13px; }
+    @media (max-width: 720px) {
+      header, main, footer { padding-left: 18px; padding-right: 18px; }
+      section { padding: 18px; }
+      .grid { grid-template-columns: 1fr; }
+      table.data-table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+    </style>
+</head>
+<body>
+  <header>
+    <h1>E-commerce App User Conversion and Retention Analysis</h1>
+    <p>Data Analyst portfolio project using pandas, NumPy, and matplotlib to diagnose user conversion, monthly retention, revenue quality, and merchandising opportunities.</p>
+  </header>
+  <main>
+    <section>
+      <h2>Executive Summary</h2>
+      <ul><li>The project processed 20,692,840 app events across 5 months, with 1,287,007 purchase events.</li><li>Total observed purchase revenue is $6,348,004.87; 2019-11 is the strongest revenue month.</li><li>The latest month, 2020-02, converted 6.59% of active users into buyers.</li><li>Average next-month active retention is 14.86%, which indicates a clear opportunity for lifecycle CRM.</li><li>Among named brands, runail leads revenue at $343,433.19.</li><li>The best normal price bucket by purchase-per-view rate is $0-1 at 35.26%.</li><li>Non-positive price records are separated from normal pricing analysis because they may represent refunds, discounts, or data quality issues.</li></ul>
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">Events</div>
+          <div class="metric-value">20,692,840</div>
+          <div class="metric-detail">2019-10 to 2020-02</div>
+        </div>
+        
+        <div class="metric">
+          <div class="metric-label">Active Users</div>
+          <div class="metric-value">1,639,358</div>
+          <div class="metric-detail">Observed users</div>
+        </div>
+        
+        <div class="metric">
+          <div class="metric-label">Buyers</div>
+          <div class="metric-value">110,518</div>
+          <div class="metric-detail">Purchased at least once</div>
+        </div>
+        
+        <div class="metric">
+          <div class="metric-label">Revenue</div>
+          <div class="metric-value">$6,348,004.87</div>
+          <div class="metric-detail">Purchase event value</div>
+        </div>
+        
+        <div class="metric">
+          <div class="metric-label">Latest Purchase Rate</div>
+          <div class="metric-value">6.59%</div>
+          <div class="metric-detail">2020-02</div>
+        </div>
+        
+        <div class="metric">
+          <div class="metric-label">Avg Next-Month Retention</div>
+          <div class="metric-value">14.86%</div>
+          <div class="metric-detail">Active users</div>
+        </div>
+        </div>
+    </section>
+    <section>
+      <h2>Business KPI Dashboard</h2>
+      <table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>month</th>
+      <th>active_users</th>
+      <th>cart_users</th>
+      <th>buyers</th>
+      <th>active_user_purchase_rate</th>
+      <th>user_cart_to_purchase_rate</th>
+      <th>revenue</th>
+      <th>aov_purchase_session</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>2019-10</td>
+      <td>399,664</td>
+      <td>133,818</td>
+      <td>25,762</td>
+      <td>6.45%</td>
+      <td>19.25%</td>
+      <td>$1,211,538.43</td>
+      <td>$41.31</td>
+    </tr>
+    <tr>
+      <td>2019-11</td>
+      <td>368,232</td>
+      <td>95,939</td>
+      <td>31,524</td>
+      <td>8.56%</td>
+      <td>32.86%</td>
+      <td>$1,531,016.90</td>
+      <td>$41.87</td>
+    </tr>
+    <tr>
+      <td>2019-12</td>
+      <td>370,154</td>
+      <td>83,458</td>
+      <td>25,613</td>
+      <td>6.92%</td>
+      <td>30.69%</td>
+      <td>$1,077,624.85</td>
+      <td>$37.30</td>
+    </tr>
+    <tr>
+      <td>2020-01</td>
+      <td>410,073</td>
+      <td>92,653</td>
+      <td>28,220</td>
+      <td>6.88%</td>
+      <td>30.46%</td>
+      <td>$1,321,535.48</td>
+      <td>$40.81</td>
+    </tr>
+    <tr>
+      <td>2020-02</td>
+      <td>391,055</td>
+      <td>89,269</td>
+      <td>25,759</td>
+      <td>6.59%</td>
+      <td>28.86%</td>
+      <td>$1,206,289.21</td>
+      <td>$41.03</td>
+    </tr>
+  </tbody>
+</table>
+      <div class="grid">
+        <img class="chart" src="figures/01_monthly_revenue_and_purchase_rate.png" alt="Monthly revenue and purchase rate" />
+        <img class="chart" src="figures/02_monthly_user_funnel.png" alt="Monthly user funnel" />
+      </div>
+    </section>
+    <section>
+      <h2>Cohort Retention</h2>
+      <div class="grid">
+        <img class="chart" src="figures/03_active_user_cohort_retention.png" alt="Active user cohort retention" />
+        <img class="chart" src="figures/04_purchase_cohort_retention.png" alt="Purchase cohort retention" />
+      </div>
+      <p class="note">Cohorts are based on each user's first observed active month or first observed purchase month.</p>
+    </section>
+    <section>
+      <h2>Merchandising Analysis</h2>
+      <div class="grid">
+        <div>
+          <h3>Top Named Brands</h3>
+          <table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>brand</th>
+      <th>purchase_events</th>
+      <th>revenue</th>
+      <th>purchase_per_view_rate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>runail</td>
+      <td>111,408</td>
+      <td>$343,433.19</td>
+      <td>18.30%</td>
+    </tr>
+    <tr>
+      <td>grattol</td>
+      <td>49,542</td>
+      <td>$266,295.94</td>
+      <td>11.62%</td>
+    </tr>
+    <tr>
+      <td>irisk</td>
+      <td>73,806</td>
+      <td>$223,903.38</td>
+      <td>18.01%</td>
+    </tr>
+    <tr>
+      <td>uno</td>
+      <td>17,586</td>
+      <td>$190,719.46</td>
+      <td>14.51%</td>
+    </tr>
+    <tr>
+      <td>strong</td>
+      <td>850</td>
+      <td>$151,941.80</td>
+      <td>1.67%</td>
+    </tr>
+    <tr>
+      <td>masura</td>
+      <td>49,751</td>
+      <td>$139,764.86</td>
+      <td>14.54%</td>
+    </tr>
+    <tr>
+      <td>jessnail</td>
+      <td>9,661</td>
+      <td>$134,775.04</td>
+      <td>5.61%</td>
+    </tr>
+    <tr>
+      <td>ingarden</td>
+      <td>27,411</td>
+      <td>$124,606.04</td>
+      <td>15.61%</td>
+    </tr>
+    <tr>
+      <td>estel</td>
+      <td>19,438</td>
+      <td>$121,788.76</td>
+      <td>9.43%</td>
+    </tr>
+    <tr>
+      <td>cnd</td>
+      <td>7,686</td>
+      <td>$106,327.80</td>
+      <td>7.15%</td>
+    </tr>
+    <tr>
+      <td>italwax</td>
+      <td>17,105</td>
+      <td>$104,057.29</td>
+      <td>15.43%</td>
+    </tr>
+    <tr>
+      <td>browxenna</td>
+      <td>3,231</td>
+      <td>$63,280.94</td>
+      <td>8.53%</td>
+    </tr>
+  </tbody>
+</table>
+        </div>
+        <img class="chart" src="figures/05_top_brands_by_revenue.png" alt="Top brands by revenue" />
+      </div>
+      <h3>Top Products</h3>
+      <table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>product_id</th>
+      <th>brand</th>
+      <th>purchase_events</th>
+      <th>revenue</th>
+      <th>purchase_per_view_rate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>5560754</td>
+      <td>strong</td>
+      <td>370</td>
+      <td>$71,726.72</td>
+      <td>2.75%</td>
+    </tr>
+    <tr>
+      <td>5809910</td>
+      <td>grattol</td>
+      <td>7,549</td>
+      <td>$39,202.47</td>
+      <td>8.07%</td>
+    </tr>
+    <tr>
+      <td>5751422</td>
+      <td>uno</td>
+      <td>3,521</td>
+      <td>$38,229.81</td>
+      <td>16.56%</td>
+    </tr>
+    <tr>
+      <td>5751383</td>
+      <td>uno</td>
+      <td>2,948</td>
+      <td>$30,138.29</td>
+      <td>12.53%</td>
+    </tr>
+    <tr>
+      <td>5850281</td>
+      <td>marathon</td>
+      <td>214</td>
+      <td>$29,283.62</td>
+      <td>1.37%</td>
+    </tr>
+    <tr>
+      <td>5849033</td>
+      <td>uno</td>
+      <td>2,782</td>
+      <td>$28,416.78</td>
+      <td>14.24%</td>
+    </tr>
+    <tr>
+      <td>5792800</td>
+      <td>NaN</td>
+      <td>2,711</td>
+      <td>$27,764.36</td>
+      <td>18.82%</td>
+    </tr>
+    <tr>
+      <td>5877454</td>
+      <td>jessnail</td>
+      <td>615</td>
+      <td>$26,832.09</td>
+      <td>2.42%</td>
+    </tr>
+    <tr>
+      <td>5560756</td>
+      <td>strong</td>
+      <td>120</td>
+      <td>$24,865.44</td>
+      <td>1.61%</td>
+    </tr>
+    <tr>
+      <td>89343</td>
+      <td>NaN</td>
+      <td>81</td>
+      <td>$24,149.61</td>
+      <td>0.92%</td>
+    </tr>
+    <tr>
+      <td>5846437</td>
+      <td>browxenna</td>
+      <td>534</td>
+      <td>$24,057.79</td>
+      <td>3.67%</td>
+    </tr>
+    <tr>
+      <td>5856186</td>
+      <td>runail</td>
+      <td>300</td>
+      <td>$22,343.13</td>
+      <td>1.44%</td>
+    </tr>
+  </tbody>
+</table>
+      <h3>Top Categories</h3>
+      <table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>category_key</th>
+      <th>purchase_events</th>
+      <th>revenue</th>
+      <th>purchase_per_view_rate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>category_id:1487580005092295511</td>
+      <td>44,870</td>
+      <td>$418,363.33</td>
+      <td>11.37%</td>
+    </tr>
+    <tr>
+      <td>category_id:1487580006300255120</td>
+      <td>3,810</td>
+      <td>$351,672.31</td>
+      <td>1.38%</td>
+    </tr>
+    <tr>
+      <td>category_id:1487580005268456287</td>
+      <td>30,450</td>
+      <td>$265,312.54</td>
+      <td>13.76%</td>
+    </tr>
+    <tr>
+      <td>category_id:1602943681873052386</td>
+      <td>36,216</td>
+      <td>$186,388.51</td>
+      <td>11.09%</td>
+    </tr>
+    <tr>
+      <td>category_id:1487580006317032337</td>
+      <td>50,555</td>
+      <td>$179,969.53</td>
+      <td>22.78%</td>
+    </tr>
+    <tr>
+      <td>category_id:1487580008246412266</td>
+      <td>16,571</td>
+      <td>$139,934.73</td>
+      <td>7.14%</td>
+    </tr>
+    <tr>
+      <td>appliances.environment.vacuum</td>
+      <td>4,000</td>
+      <td>$138,623.97</td>
+      <td>3.52%</td>
+    </tr>
+    <tr>
+      <td>category_id:1487580013950664926</td>
+      <td>5,897</td>
+      <td>$135,893.36</td>
+      <td>2.53%</td>
+    </tr>
+    <tr>
+      <td>category_id:1487580005595612013</td>
+      <td>44,334</td>
+      <td>$134,047.48</td>
+      <td>14.44%</td>
+    </tr>
+    <tr>
+      <td>category_id:1487580009051717646</td>
+      <td>3,137</td>
+      <td>$114,698.00</td>
+      <td>2.74%</td>
+    </tr>
+    <tr>
+      <td>category_id:1487580005671109489</td>
+      <td>43,452</td>
+      <td>$108,903.93</td>
+      <td>18.81%</td>
+    </tr>
+    <tr>
+      <td>category_id:1487580007675986893</td>
+      <td>80,137</td>
+      <td>$102,743.07</td>
+      <td>18.91%</td>
+    </tr>
+  </tbody>
+</table>
+    </section>
+    <section>
+      <h2>Pricing and Timing</h2>
+      <div class="grid">
+        <div>
+          <h3>Price Buckets</h3>
+          <table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>price_bucket</th>
+      <th>view_events</th>
+      <th>purchase_events</th>
+      <th>purchase_per_view_rate</th>
+      <th>revenue</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>non-positive</td>
+      <td>30,492</td>
+      <td>127</td>
+      <td>0.42%</td>
+      <td>$-3,825.42</td>
+    </tr>
+    <tr>
+      <td>$0-1</td>
+      <td>576,247</td>
+      <td>203,163</td>
+      <td>35.26%</td>
+      <td>$126,152.72</td>
+    </tr>
+    <tr>
+      <td>$1-5</td>
+      <td>4,181,596</td>
+      <td>706,526</td>
+      <td>16.90%</td>
+      <td>$1,966,410.11</td>
+    </tr>
+    <tr>
+      <td>$5-10</td>
+      <td>2,449,087</td>
+      <td>252,711</td>
+      <td>10.32%</td>
+      <td>$1,681,548.37</td>
+    </tr>
+    <tr>
+      <td>$10-20</td>
+      <td>1,250,091</td>
+      <td>94,298</td>
+      <td>7.54%</td>
+      <td>$1,263,687.51</td>
+    </tr>
+    <tr>
+      <td>$20-50</td>
+      <td>669,727</td>
+      <td>23,416</td>
+      <td>3.50%</td>
+      <td>$684,718.05</td>
+    </tr>
+    <tr>
+      <td>$50-100</td>
+      <td>331,788</td>
+      <td>5,187</td>
+      <td>1.56%</td>
+      <td>$357,939.40</td>
+    </tr>
+    <tr>
+      <td>$100+</td>
+      <td>168,793</td>
+      <td>1,579</td>
+      <td>0.94%</td>
+      <td>$271,374.13</td>
+    </tr>
+  </tbody>
+</table>
+        </div>
+        <img class="chart" src="figures/06_price_bucket_conversion.png" alt="Price bucket conversion" />
+        <img class="chart" src="figures/07_daily_revenue_trend.png" alt="Daily revenue trend" />
+        <img class="chart" src="figures/08_hourly_purchase_pattern.png" alt="Hourly purchase events" />
+      </div>
+    </section>
+    <section>
+      <h2>Recommendations</h2>
+      <ul><li>Prioritize cart recovery. Latest user cart-to-purchase conversion is 28.86%, so abandoned-cart push/email tests should be a first experiment.</li><li>Create repeat-purchase journeys for recent buyers using replenishment reminders, loyalty offers, and post-purchase education.</li><li>Use high-demand brands such as runail, grattol, irisk, uno, strong in search suggestions, homepage modules, and campaign landing pages.</li><li>Design bundle and cross-sell tests around high-converting price buckets such as $0-1, $1-5.</li><li>Improve product metadata capture, especially brand and category code fields, before building personalization or recommendation models.</li><li>Audit non-positive price purchase records separately so revenue and pricing analysis stay clean.</li></ul>
+    </section>
+    <section>
+      <h2>Data Quality</h2>
+      <table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>field</th>
+      <th>missing_values</th>
+      <th>missing_rate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>event_time</td>
+      <td>0</td>
+      <td>0.00%</td>
+    </tr>
+    <tr>
+      <td>event_type</td>
+      <td>0</td>
+      <td>0.00%</td>
+    </tr>
+    <tr>
+      <td>product_id</td>
+      <td>0</td>
+      <td>0.00%</td>
+    </tr>
+    <tr>
+      <td>category_id</td>
+      <td>0</td>
+      <td>0.00%</td>
+    </tr>
+    <tr>
+      <td>category_code</td>
+      <td>20,339,246</td>
+      <td>98.29%</td>
+    </tr>
+    <tr>
+      <td>brand</td>
+      <td>8,757,117</td>
+      <td>42.32%</td>
+    </tr>
+    <tr>
+      <td>price</td>
+      <td>0</td>
+      <td>0.00%</td>
+    </tr>
+    <tr>
+      <td>user_id</td>
+      <td>0</td>
+      <td>0.00%</td>
+    </tr>
+    <tr>
+      <td>user_session</td>
+      <td>4,598</td>
+      <td>0.02%</td>
+    </tr>
+  </tbody>
+</table>
+      <p class="note">Category code and brand fields have meaningful missingness. The analysis keeps those records, labels them clearly, and uses category ID fallback where needed.</p>
+    </section>
+  </main>
+  <footer>Generated from pandas analysis outputs in <code>data/processed</code>.</footer>
+</body>
+</html>
